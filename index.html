@@ -1,14 +1,198 @@
 <!DOCTYPE html>
+
 <html lang="fr">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Augmente mes finances</title>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>AMF — Gestion de finances</title>
+
+  <style>
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+      font-family: Arial, sans-serif;
+    }
+
+    body {
+      background: #f4f6f8;
+      color: #17202a;
+    }
+
+    header {
+      background: #17202a;
+      color: white;
+      padding: 20px;
+    }
+
+    header h1 {
+      font-size: 28px;
+    }
+
+    header p {
+      margin-top: 5px;
+      color: #bdc3c7;
+    }
+
+    .container {
+      max-width: 1100px;
+      margin: 30px auto;
+      padding: 0 20px;
+    }
+
+    .welcome {
+      margin-bottom: 25px;
+    }
+
+    .welcome h2 {
+      font-size: 25px;
+      margin-bottom: 8px;
+    }
+
+    .cards {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 20px;
+    }
+
+    .card {
+      background: white;
+      padding: 25px;
+      border-radius: 15px;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.08);
+    }
+
+    .card h3 {
+      color: #566573;
+      font-size: 15px;
+      margin-bottom: 12px;
+    }
+
+    .amount {
+      font-size: 28px;
+      font-weight: bold;
+    }
+
+    .actions {
+      margin-top: 30px;
+      display: flex;
+      gap: 15px;
+      flex-wrap: wrap;
+    }
+
+    button {
+      border: none;
+      padding: 14px 22px;
+      border-radius: 10px;
+      cursor: pointer;
+      font-size: 16px;
+      font-weight: bold;
+    }
+
+    .primary {
+      background: #17202a;
+      color: white;
+    }
+
+    .secondary {
+      background: white;
+      color: #17202a;
+      border: 1px solid #d5d8dc;
+    }
+
+    .transactions {
+      margin-top: 35px;
+      background: white;
+      padding: 25px;
+      border-radius: 15px;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.08);
+    }
+
+    .transactions h2 {
+      margin-bottom: 20px;
+    }
+
+    .transaction {
+      display: flex;
+      justify-content: space-between;
+      padding: 15px 0;
+      border-bottom: 1px solid #eee;
+    }
+
+    .transaction:last-child {
+      border-bottom: none;
+    }
+
+    .expense {
+      color: #c0392b;
+      font-weight: bold;
+    }
+
+    .income {
+      color: #27ae60;
+      font-weight: bold;
+    }
+
+    @media (max-width: 750px) {
+      .cards {
+        grid-template-columns: 1fr;
+      }
+    }
+  </style>
+
 </head>
+
 <body>
 
-    <h1>Augmente mes finances</h1>
-    <p>Bienvenue sur AMF.</p>
+  <header>
+    <h1>AMF</h1>
+    <p>Application de gestion de finances</p>
+  </header>
+
+  <main class="container">
+
+```
+<section class="welcome">
+  <h2>Tableau de bord</h2>
+  <p>Bienvenue dans votre espace financier.</p>
+</section>
+
+<section class="cards">
+
+  <div class="card">
+    <h3>SOLDE TOTAL</h3>
+    <div class="amount">0 FCFA</div>
+  </div>
+
+  <div class="card">
+    <h3>REVENUS</h3>
+    <div class="amount">0 FCFA</div>
+  </div>
+
+  <div class="card">
+    <h3>DÉPENSES</h3>
+    <div class="amount">0 FCFA</div>
+  </div>
+
+</section>
+
+<section class="actions">
+  <button class="primary">+ Ajouter une dépense</button>
+  <button class="secondary">+ Ajouter un revenu</button>
+</section>
+
+<section class="transactions">
+  <h2>Dernières transactions</h2>
+
+  <div class="transaction">
+    <span>Aucune transaction</span>
+    <span>—</span>
+  </div>
+
+</section>
+```
+
+  </main>
 
 </body>
 </html>
