@@ -115,8 +115,10 @@
     .transaction {
       display: flex;
       justify-content: space-between;
+      align-items: center;
       padding: 15px 0;
       border-bottom: 1px solid #eee;
+      gap: 15px;
     }
 
     .transaction:last-child {
@@ -131,6 +133,73 @@
     .income {
       color: #27ae60;
       font-weight: bold;
+    }
+
+    .delete {
+      padding: 8px 12px;
+      background: #f4f6f8;
+      color: #c0392b;
+      font-size: 13px;
+    }
+
+    .empty {
+      color: #7f8c8d;
+      padding: 10px 0;
+    }
+
+    .modal {
+      display: none;
+      position: fixed;
+      inset: 0;
+      background: rgba(0,0,0,0.5);
+      align-items: center;
+      justify-content: center;
+      padding: 20px;
+    }
+
+    .modal.active {
+      display: flex;
+    }
+
+    .modal-content {
+      background: white;
+      width: 100%;
+      max-width: 450px;
+      padding: 25px;
+      border-radius: 15px;
+    }
+
+    .modal-content h2 {
+      margin-bottom: 20px;
+    }
+
+    .form-group {
+      margin-bottom: 15px;
+    }
+
+    .form-group label {
+      display: block;
+      margin-bottom: 7px;
+      font-weight: bold;
+    }
+
+    .form-group input,
+    .form-group select {
+      width: 100%;
+      padding: 12px;
+      border: 1px solid #d5d8dc;
+      border-radius: 8px;
+      font-size: 16px;
+    }
+
+    .modal-actions {
+      display: flex;
+      gap: 10px;
+      margin-top: 20px;
+    }
+
+    .modal-actions button {
+      flex: 1;
     }
 
     @media (max-width: 750px) {
@@ -161,38 +230,238 @@
 
   <div class="card">
     <h3>SOLDE TOTAL</h3>
-    <div class="amount">0 FCFA</div>
+    <div class="amount" id="balance">0 FCFA</div>
   </div>
 
   <div class="card">
     <h3>REVENUS</h3>
-    <div class="amount">0 FCFA</div>
+    <div class="amount" id="income">0 FCFA</div>
   </div>
 
   <div class="card">
     <h3>DÉPENSES</h3>
-    <div class="amount">0 FCFA</div>
+    <div class="amount" id="expense">0 FCFA</div>
   </div>
 
 </section>
 
 <section class="actions">
-  <button class="primary">+ Ajouter une dépense</button>
-  <button class="secondary">+ Ajouter un revenu</button>
+  <button class="primary" onclick="openModal('expense')">
+    + Ajouter une dépense
+  </button>
+
+  <button class="secondary" onclick="openModal('income')">
+    + Ajouter un revenu
+  </button>
 </section>
 
 <section class="transactions">
   <h2>Dernières transactions</h2>
-
-  <div class="transaction">
-    <span>Aucune transaction</span>
-    <span>—</span>
-  </div>
-
+  <div id="transactionList"></div>
 </section>
 ```
 
   </main>
+
+  <div class="modal" id="modal">
+
+```
+<div class="modal-content">
+
+  <h2 id="modalTitle">Ajouter une transaction</h2>
+
+  <div class="form-group">
+    <label for="description">Description</label>
+    <input
+      type="text"
+      id="description"
+      placeholder="Ex : Salaire, courses..."
+    >
+  </div>
+
+  <div class="form-group">
+    <label for="amount">Montant (FCFA)</label>
+    <input
+      type="number"
+      id="amount"
+      placeholder="Ex : 50000"
+      min="1"
+    >
+  </div>
+
+  <div class="modal-actions">
+    <button class="secondary" onclick="closeModal()">
+      Annuler
+    </button>
+
+    <button class="primary" onclick="saveTransaction()">
+      Enregistrer
+    </button>
+  </div>
+
+</div>
+```
+
+  </div>
+
+  <script>
+
+    let transactions =
+      JSON.parse(localStorage.getItem("amf_transactions")) || [];
+
+    let currentType = "expense";
+
+    function formatMoney(amount) {
+      return new Intl.NumberFormat("fr-FR").format(amount) + " FCFA";
+    }
+
+    function openModal(type) {
+
+      currentType = type;
+
+      document.getElementById("modalTitle").textContent =
+        type === "income"
+          ? "Ajouter un revenu"
+          : "Ajouter une dépense";
+
+      document.getElementById("description").value = "";
+      document.getElementById("amount").value = "";
+
+      document.getElementById("modal").classList.add("active");
+    }
+
+    function closeModal() {
+      document.getElementById("modal").classList.remove("active");
+    }
+
+    function saveTransaction() {
+
+      const description =
+        document.getElementById("description").value.trim();
+
+      const amount =
+        Number(document.getElementById("amount").value);
+
+      if (!description) {
+        alert("Veuillez entrer une description.");
+        return;
+      }
+
+      if (!amount || amount <= 0) {
+        alert("Veuillez entrer un montant valide.");
+        return;
+      }
+
+      transactions.push({
+        id: Date.now(),
+        description: description,
+        amount: amount,
+        type: currentType,
+        date: new Date().toLocaleDateString("fr-FR")
+      });
+
+      localStorage.setItem(
+        "amf_transactions",
+        JSON.stringify(transactions)
+      );
+
+      closeModal();
+      updateDashboard();
+    }
+
+    function deleteTransaction(id) {
+
+      transactions =
+        transactions.filter(transaction => transaction.id !== id);
+
+      localStorage.setItem(
+        "amf_transactions",
+        JSON.stringify(transactions)
+      );
+
+      updateDashboard();
+    }
+
+    function updateDashboard() {
+
+      let totalIncome = 0;
+      let totalExpense = 0;
+
+      transactions.forEach(transaction => {
+
+        if (transaction.type === "income") {
+          totalIncome += transaction.amount;
+        } else {
+          totalExpense += transaction.amount;
+        }
+
+      });
+
+      const balance = totalIncome - totalExpense;
+
+      document.getElementById("income").textContent =
+        formatMoney(totalIncome);
+
+      document.getElementById("expense").textContent =
+        formatMoney(totalExpense);
+
+      document.getElementById("balance").textContent =
+        formatMoney(balance);
+
+      const list =
+        document.getElementById("transactionList");
+
+      if (transactions.length === 0) {
+
+        list.innerHTML =
+          '<div class="empty">Aucune transaction</div>';
+
+        return;
+      }
+
+      list.innerHTML = transactions
+        .slice()
+        .reverse()
+        .map(transaction => {
+
+          const sign =
+            transaction.type === "income" ? "+" : "-";
+
+          const className =
+            transaction.type === "income"
+              ? "income"
+              : "expense";
+
+          return `
+            <div class="transaction">
+
+              <div>
+                <strong>${transaction.description}</strong>
+                <br>
+                <small>${transaction.date}</small>
+              </div>
+
+              <span class="${className}">
+                ${sign} ${formatMoney(transaction.amount)}
+              </span>
+
+              <button
+                class="delete"
+                onclick="deleteTransaction(${transaction.id})"
+              >
+                Supprimer
+              </button>
+
+            </div>
+          `;
+
+        })
+        .join("");
+    }
+
+    updateDashboard();
+
+  </script>
 
 </body>
 </html>
