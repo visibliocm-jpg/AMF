@@ -92,6 +92,10 @@ button {
     font-weight: bold;
 }
 
+button:hover {
+    opacity: 0.9;
+}
+
 .btn-income {
     background: #16a34a;
     color: white;
@@ -107,9 +111,27 @@ button {
     color: white;
 }
 
-button:hover {
-    opacity: 0.9;
+/* MOIS */
+
+.month-selector {
+    background: white;
+    border-radius: 14px;
+    padding: 20px;
+    margin-bottom: 25px;
+    box-shadow: 0 3px 12px rgba(0,0,0,0.06);
 }
+
+.month-selector label {
+    display: block;
+    font-weight: bold;
+    margin-bottom: 8px;
+}
+
+.month-selector input {
+    max-width: 300px;
+}
+
+/* SECTIONS */
 
 section {
     background: white;
@@ -221,12 +243,6 @@ section h2 {
     margin-top: 12px;
 }
 
-.empty {
-    color: #6b7280;
-    text-align: center;
-    padding: 20px;
-}
-
 /* STATISTIQUES */
 
 .statistics-grid {
@@ -329,6 +345,12 @@ select {
     padding: 8px 12px;
 }
 
+.empty {
+    color: #6b7280;
+    text-align: center;
+    padding: 20px;
+}
+
 /* MODAL */
 
 .modal {
@@ -419,6 +441,14 @@ select {
         align-items: stretch;
         flex-direction: column;
     }
+
+    .budget-top {
+        flex-direction: column;
+    }
+
+    .budget-amount {
+        text-align: left;
+    }
 }
 </style>
 </head>
@@ -432,32 +462,64 @@ select {
 
 <div class="container">
 
+    <!-- SÉLECTION DU MOIS -->
+
+    <div class="month-selector">
+
+        <label for="selectedMonth">
+            📅 Mois sélectionné
+        </label>
+
+        <input
+            type="month"
+            id="selectedMonth"
+            onchange="updateDashboard()">
+
+    </div>
+
+
     <!-- TABLEAU DE BORD -->
 
     <div class="cards">
 
         <div class="card">
-            <h3>Solde total</h3>
-            <div class="amount balance" id="balance">
+
+            <h3>Solde du mois</h3>
+
+            <div
+                class="amount balance"
+                id="balance">
                 0 FCFA
             </div>
+
         </div>
 
         <div class="card">
-            <h3>Revenus</h3>
-            <div class="amount income" id="totalIncome">
+
+            <h3>Revenus du mois</h3>
+
+            <div
+                class="amount income"
+                id="totalIncome">
                 0 FCFA
             </div>
+
         </div>
 
         <div class="card">
-            <h3>Dépenses</h3>
-            <div class="amount expense" id="totalExpense">
+
+            <h3>Dépenses du mois</h3>
+
+            <div
+                class="amount expense"
+                id="totalExpense">
                 0 FCFA
             </div>
+
         </div>
 
     </div>
+
 
     <!-- ACTIONS -->
 
@@ -477,13 +539,14 @@ select {
 
     </div>
 
+
     <!-- BUDGETS -->
 
     <section>
 
         <div class="budget-header">
 
-            <h2>🎯 Mes budgets</h2>
+            <h2>🎯 Budgets du mois</h2>
 
             <button
                 class="btn-budget"
@@ -500,11 +563,12 @@ select {
 
     </section>
 
+
     <!-- STATISTIQUES -->
 
     <section>
 
-        <h2>📊 Statistiques</h2>
+        <h2>📊 Statistiques du mois</h2>
 
         <div class="statistics-grid">
 
@@ -528,11 +592,12 @@ select {
 
     </section>
 
+
     <!-- TRANSACTIONS -->
 
     <section>
 
-        <h2>💳 Transactions</h2>
+        <h2>💳 Transactions du mois</h2>
 
         <div class="filters">
 
@@ -556,7 +621,9 @@ select {
                 id="categoryFilter"
                 onchange="updateTransactions()">
 
-                <option value="all">Toutes les catégories</option>
+                <option value="all">
+                    Toutes les catégories
+                </option>
 
                 <option>Alimentation</option>
                 <option>Transport</option>
@@ -571,10 +638,10 @@ select {
 
             </select>
 
-            <input
-                type="date"
-                id="dateFilter"
-                onchange="updateTransactions()">
+            <button
+                onclick="resetFilters()">
+                Réinitialiser
+            </button>
 
         </div>
 
@@ -587,7 +654,9 @@ select {
 
 <!-- MODAL TRANSACTION -->
 
-<div class="modal" id="transactionModal">
+<div
+    class="modal"
+    id="transactionModal">
 
     <div class="modal-content">
 
@@ -672,7 +741,9 @@ select {
 
 <!-- MODAL BUDGET -->
 
-<div class="modal" id="budgetModal">
+<div
+    class="modal"
+    id="budgetModal">
 
     <div class="modal-content">
 
@@ -737,12 +808,60 @@ select {
 ========================= */
 
 let transactions =
-    JSON.parse(localStorage.getItem("amf_transactions")) || [];
+    JSON.parse(
+        localStorage.getItem("amf_transactions")
+    ) || [];
 
 let budgets =
-    JSON.parse(localStorage.getItem("amf_budgets")) || [];
+    JSON.parse(
+        localStorage.getItem("amf_budgets")
+    ) || [];
 
 let currentType = "expense";
+
+
+/* =========================
+   MOIS
+========================= */
+
+function getCurrentMonth() {
+
+    const now = new Date();
+
+    return (
+        now.getFullYear() +
+        "-" +
+        String(now.getMonth() + 1).padStart(2, "0")
+    );
+}
+
+
+function getSelectedMonth() {
+
+    return document.getElementById("selectedMonth").value;
+}
+
+
+function getMonthName(monthValue) {
+
+    if (!monthValue) {
+        return "";
+    }
+
+    const [year, month] =
+        monthValue.split("-");
+
+    const date =
+        new Date(year, Number(month) - 1);
+
+    return date.toLocaleDateString(
+        "fr-FR",
+        {
+            month: "long",
+            year: "numeric"
+        }
+    );
+}
 
 
 /* =========================
@@ -753,7 +872,6 @@ function formatMoney(amount) {
 
     return new Intl.NumberFormat("fr-FR")
         .format(amount) + " FCFA";
-
 }
 
 
@@ -775,6 +893,7 @@ function openTransactionModal(type) {
         : "Ajouter une dépense";
 
     document.getElementById("description").value = "";
+
     document.getElementById("amount").value = "";
 
     document.getElementById("category").value =
@@ -783,7 +902,7 @@ function openTransactionModal(type) {
         : "Alimentation";
 
     document.getElementById("date").value =
-        new Date().toISOString().split("T")[0];
+        getSelectedMonth() + "-01";
 }
 
 
@@ -791,7 +910,6 @@ function closeTransactionModal() {
 
     document.getElementById("transactionModal")
         .style.display = "none";
-
 }
 
 
@@ -812,7 +930,12 @@ function saveTransaction() {
     const date =
         document.getElementById("date").value;
 
-    if (!description || !amount || amount <= 0 || !date) {
+    if (
+        !description ||
+        !amount ||
+        amount <= 0 ||
+        !date
+    ) {
 
         alert(
             "Veuillez remplir correctement tous les champs."
@@ -857,7 +980,9 @@ function deleteTransaction(id) {
     }
 
     transactions =
-        transactions.filter(t => t.id !== id);
+        transactions.filter(
+            t => t.id !== id
+        );
 
     localStorage.setItem(
         "amf_transactions",
@@ -869,23 +994,43 @@ function deleteTransaction(id) {
 
 
 /* =========================
+   TRANSACTIONS DU MOIS
+========================= */
+
+function getMonthlyTransactions() {
+
+    const selectedMonth =
+        getSelectedMonth();
+
+    return transactions.filter(t =>
+        t.date.startsWith(selectedMonth)
+    );
+}
+
+
+/* =========================
    DASHBOARD
 ========================= */
 
 function updateDashboard() {
 
+    const monthlyTransactions =
+        getMonthlyTransactions();
+
     let totalIncome = 0;
     let totalExpense = 0;
 
-    transactions.forEach(t => {
+    monthlyTransactions.forEach(t => {
+
+        const amount = Number(t.amount);
 
         if (t.type === "income") {
 
-            totalIncome += Number(t.amount);
+            totalIncome += amount;
 
         } else {
 
-            totalExpense += Number(t.amount);
+            totalExpense += amount;
 
         }
 
@@ -915,7 +1060,7 @@ function updateDashboard() {
 
 
 /* =========================
-   LISTE DES TRANSACTIONS
+   TRANSACTIONS
 ========================= */
 
 function updateTransactions() {
@@ -930,11 +1075,14 @@ function updateTransactions() {
     const category =
         document.getElementById("categoryFilter").value;
 
-    const date =
-        document.getElementById("dateFilter").value;
+    const selectedMonth =
+        getSelectedMonth();
 
     const filtered =
         transactions.filter(t => {
+
+            const matchesMonth =
+                t.date.startsWith(selectedMonth);
 
             const matchesSearch =
                 t.description
@@ -953,34 +1101,34 @@ function updateTransactions() {
                 category === "all" ||
                 t.category === category;
 
-            const matchesDate =
-                !date ||
-                t.date === date;
-
             return (
+                matchesMonth &&
                 matchesSearch &&
                 matchesType &&
-                matchesCategory &&
-                matchesDate
+                matchesCategory
             );
 
         });
 
     const container =
-        document.getElementById("transactionsList");
+        document.getElementById(
+            "transactionsList"
+        );
 
     if (filtered.length === 0) {
 
         container.innerHTML =
             `<div class="empty">
-                Aucune transaction trouvée.
+                Aucune transaction pour
+                ${getMonthName(selectedMonth)}.
             </div>`;
 
         return;
     }
 
     filtered.sort((a,b) =>
-        new Date(b.date) - new Date(a.date)
+        new Date(b.date) -
+        new Date(a.date)
     );
 
     container.innerHTML =
@@ -1008,14 +1156,15 @@ function updateTransactions() {
 
                         <div class="transaction-info">
                             ${escapeHTML(t.category)}
-                            ·
-                            ${t.date}
+                            · ${t.date}
                         </div>
 
                     </div>
 
-                    <div class="transaction-amount ${amountClass}">
-                        ${sign} ${formatMoney(Number(t.amount))}
+                    <div
+                        class="transaction-amount ${amountClass}">
+                        ${sign}
+                        ${formatMoney(Number(t.amount))}
                     </div>
 
                     <button
@@ -1033,17 +1182,39 @@ function updateTransactions() {
 
 
 /* =========================
+   FILTRES
+========================= */
+
+function resetFilters() {
+
+    document.getElementById("searchInput")
+        .value = "";
+
+    document.getElementById("typeFilter")
+        .value = "all";
+
+    document.getElementById("categoryFilter")
+        .value = "all";
+
+    updateTransactions();
+}
+
+
+/* =========================
    STATISTIQUES
 ========================= */
 
 function updateStatistics() {
+
+    const monthlyTransactions =
+        getMonthlyTransactions();
 
     let totalIncome = 0;
     let totalExpense = 0;
 
     const categories = {};
 
-    transactions.forEach(t => {
+    monthlyTransactions.forEach(t => {
 
         const amount = Number(t.amount);
 
@@ -1065,20 +1236,30 @@ function updateStatistics() {
     });
 
 
-    const comparison =
-        document.getElementById("comparisonChart");
+    /* REVENUS VS DÉPENSES */
 
-    if (totalIncome === 0 && totalExpense === 0) {
+    const comparison =
+        document.getElementById(
+            "comparisonChart"
+        );
+
+    if (
+        totalIncome === 0 &&
+        totalExpense === 0
+    ) {
 
         comparison.innerHTML =
             `<div class="empty">
-                Ajoutez des transactions pour voir vos statistiques.
+                Aucune donnée pour ce mois.
             </div>`;
 
     } else {
 
         const max =
-            Math.max(totalIncome, totalExpense);
+            Math.max(
+                totalIncome,
+                totalExpense
+            );
 
         const incomeWidth =
             max > 0
@@ -1141,8 +1322,12 @@ function updateStatistics() {
     }
 
 
+    /* CATÉGORIES */
+
     const categoryChart =
-        document.getElementById("categoryChart");
+        document.getElementById(
+            "categoryChart"
+        );
 
     const sortedCategories =
         Object.entries(categories)
@@ -1152,7 +1337,7 @@ function updateStatistics() {
 
         categoryChart.innerHTML =
             `<div class="empty">
-                Aucune dépense enregistrée.
+                Aucune dépense pour ce mois.
             </div>`;
 
         return;
@@ -1162,47 +1347,53 @@ function updateStatistics() {
         sortedCategories[0][1];
 
     categoryChart.innerHTML =
-        sortedCategories.map(([category, amount]) => {
+        sortedCategories.map(
+            ([category, amount]) => {
 
-            const width =
-                (amount / maxCategory) * 100;
+                const width =
+                    (amount / maxCategory) * 100;
 
-            const percentage =
-                totalExpense > 0
-                ? ((amount / totalExpense) * 100).toFixed(1)
-                : 0;
+                const percentage =
+                    totalExpense > 0
+                    ? (
+                        amount /
+                        totalExpense *
+                        100
+                    ).toFixed(1)
+                    : 0;
 
-            return `
+                return `
 
-                <div class="chart-row">
+                    <div class="chart-row">
 
-                    <div class="chart-label">
+                        <div class="chart-label">
 
-                        <strong>
-                            ${escapeHTML(category)}
-                        </strong>
+                            <strong>
+                                ${escapeHTML(category)}
+                            </strong>
 
-                        <span>
-                            ${formatMoney(amount)}
-                            · ${percentage}%
-                        </span>
+                            <span>
+                                ${formatMoney(amount)}
+                                · ${percentage}%
+                            </span>
 
-                    </div>
+                        </div>
 
-                    <div class="bar-background">
+                        <div class="bar-background">
 
-                        <div
-                            class="bar category-bar"
-                            style="width:${width}%">
+                            <div
+                                class="bar category-bar"
+                                style="width:${width}%">
+                            </div>
+
                         </div>
 
                     </div>
 
-                </div>
+                `;
 
-            `;
-
-        }).join("");
+            }
+        ).join("");
 }
 
 
@@ -1217,7 +1408,6 @@ function openBudgetModal() {
 
     document.getElementById("budgetAmount")
         .value = "";
-
 }
 
 
@@ -1225,33 +1415,42 @@ function closeBudgetModal() {
 
     document.getElementById("budgetModal")
         .style.display = "none";
-
 }
 
 
 function saveBudget() {
 
     const category =
-        document.getElementById("budgetCategory")
-        .value;
+        document.getElementById(
+            "budgetCategory"
+        ).value;
 
     const amount =
         Number(
-            document.getElementById("budgetAmount")
-            .value
+            document.getElementById(
+                "budgetAmount"
+            ).value
         );
 
     if (!amount || amount <= 0) {
 
-        alert("Veuillez entrer un budget valide.");
+        alert(
+            "Veuillez entrer un budget valide."
+        );
 
         return;
     }
 
 
+    const selectedMonth =
+        getSelectedMonth();
+
+
     const existing =
         budgets.find(
-            b => b.category === category
+            b =>
+                b.category === category &&
+                b.month === selectedMonth
         );
 
 
@@ -1267,7 +1466,9 @@ function saveBudget() {
 
             category: category,
 
-            amount: amount
+            amount: amount,
+
+            month: selectedMonth
 
         });
 
@@ -1292,7 +1493,9 @@ function deleteBudget(id) {
     }
 
     budgets =
-        budgets.filter(b => b.id !== id);
+        budgets.filter(
+            b => b.id !== id
+        );
 
     localStorage.setItem(
         "amf_budgets",
@@ -1306,41 +1509,62 @@ function deleteBudget(id) {
 function updateBudgets() {
 
     const container =
-        document.getElementById("budgetList");
+        document.getElementById(
+            "budgetList"
+        );
 
-    if (budgets.length === 0) {
+    const selectedMonth =
+        getSelectedMonth();
+
+
+    /*
+       Compatibilité avec les anciens budgets :
+       ils restent considérés comme budgets
+       du mois actuel.
+    */
+
+    const monthlyBudgets =
+        budgets.filter(b => {
+
+            if (b.month) {
+                return b.month === selectedMonth;
+            }
+
+            return selectedMonth === getCurrentMonth();
+
+        });
+
+
+    if (monthlyBudgets.length === 0) {
 
         container.innerHTML =
             `<div class="empty">
-                Aucun budget configuré.
-                <br>
-                Cliquez sur « + Ajouter un budget » pour commencer.
+                Aucun budget pour
+                ${getMonthName(selectedMonth)}.
+                <br><br>
+                Cliquez sur
+                « + Ajouter un budget »
+                pour commencer.
             </div>`;
 
         return;
     }
 
 
-    const today = new Date();
-
-    const currentMonth =
-        today.getFullYear() +
-        "-" +
-        String(today.getMonth() + 1)
-            .padStart(2, "0");
+    const monthlyTransactions =
+        getMonthlyTransactions();
 
 
     container.innerHTML =
-        budgets.map(budget => {
+        monthlyBudgets.map(budget => {
 
             let spent = 0;
 
-            transactions.forEach(t => {
+            monthlyTransactions.forEach(t => {
 
                 if (
                     t.type === "expense" &&
-                    t.category === budget.category &&
-                    t.date.startsWith(currentMonth)
+                    t.category === budget.category
                 ) {
 
                     spent += Number(t.amount);
@@ -1358,11 +1582,17 @@ function updateBudgets() {
 
             const percentage =
                 budgetAmount > 0
-                ? (spent / budgetAmount) * 100
+                ? (
+                    spent /
+                    budgetAmount
+                ) * 100
                 : 0;
 
             const progress =
-                Math.min(percentage, 100);
+                Math.min(
+                    percentage,
+                    100
+                );
 
 
             let progressClass =
@@ -1407,13 +1637,17 @@ function updateBudgets() {
                     <div class="budget-top">
 
                         <div class="budget-name">
-                            ${escapeHTML(budget.category)}
+                            ${escapeHTML(
+                                budget.category
+                            )}
                         </div>
 
                         <div class="budget-amount">
 
                             Budget :
-                            ${formatMoney(budgetAmount)}
+                            ${formatMoney(
+                                budgetAmount
+                            )}
 
                             <br>
 
@@ -1428,7 +1662,8 @@ function updateBudgets() {
                     <div class="progress-background">
 
                         <div
-                            class="progress-bar ${progressClass}"
+                            class="progress-bar
+                            ${progressClass}"
                             style="width:${progress}%">
                         </div>
 
@@ -1442,7 +1677,8 @@ function updateBudgets() {
                         </span>
 
                         <span>
-                            ${percentage.toFixed(0)}% utilisé
+                            ${percentage.toFixed(0)}%
+                            utilisé
                         </span>
 
                     </div>
@@ -1454,8 +1690,16 @@ function updateBudgets() {
 
                             ${
                                 remaining >= 0
-                                ? "Reste : " + formatMoney(remaining)
-                                : "Dépassement : " + formatMoney(Math.abs(remaining))
+                                ? "Reste : " +
+                                  formatMoney(
+                                      remaining
+                                  )
+                                : "Dépassement : " +
+                                  formatMoney(
+                                      Math.abs(
+                                          remaining
+                                      )
+                                  )
                             }
 
                         </span>
@@ -1497,6 +1741,10 @@ function escapeHTML(text) {
 /* =========================
    INITIALISATION
 ========================= */
+
+document.getElementById(
+    "selectedMonth"
+).value = getCurrentMonth();
 
 updateDashboard();
 
