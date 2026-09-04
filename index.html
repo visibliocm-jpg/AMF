@@ -112,6 +112,23 @@
       margin-bottom: 20px;
     }
 
+    .filters {
+      display: grid;
+      grid-template-columns: 2fr 1fr 1fr 1fr;
+      gap: 10px;
+      margin-bottom: 20px;
+    }
+
+    .filters input,
+    .filters select {
+      width: 100%;
+      padding: 12px;
+      border: 1px solid #d5d8dc;
+      border-radius: 8px;
+      font-size: 15px;
+      background: white;
+    }
+
     .transaction {
       display: grid;
       grid-template-columns: 1fr auto auto auto;
@@ -208,6 +225,12 @@
       flex: 1;
     }
 
+    @media (max-width: 850px) {
+      .filters {
+        grid-template-columns: 1fr 1fr;
+      }
+    }
+
     @media (max-width: 750px) {
       .cards {
         grid-template-columns: 1fr;
@@ -273,7 +296,44 @@
   <section class="transactions">
 
 ```
-<h2>Dernières transactions</h2>
+<h2>Transactions</h2>
+
+<div class="filters">
+
+  <input
+    type="text"
+    id="search"
+    placeholder="🔎 Rechercher..."
+    oninput="updateTransactions()"
+  >
+
+  <select id="typeFilter" onchange="updateTransactions()">
+    <option value="all">Tous les types</option>
+    <option value="income">Revenus</option>
+    <option value="expense">Dépenses</option>
+  </select>
+
+  <select id="categoryFilter" onchange="updateTransactions()">
+    <option value="all">Toutes les catégories</option>
+    <option value="Alimentation">Alimentation</option>
+    <option value="Transport">Transport</option>
+    <option value="Logement">Logement</option>
+    <option value="Santé">Santé</option>
+    <option value="Éducation">Éducation</option>
+    <option value="Shopping">Shopping</option>
+    <option value="Loisirs">Loisirs</option>
+    <option value="Salaire">Salaire</option>
+    <option value="Business">Business</option>
+    <option value="Autre">Autre</option>
+  </select>
+
+  <input
+    type="date"
+    id="dateFilter"
+    onchange="updateTransactions()"
+  >
+
+</div>
 
 <div id="transactionList"></div>
 ```
@@ -291,7 +351,6 @@
 
 <div class="form-group">
   <label for="description">Description</label>
-
   <input
     type="text"
     id="description"
@@ -301,7 +360,6 @@
 
 <div class="form-group">
   <label for="amount">Montant (FCFA)</label>
-
   <input
     type="number"
     id="amount"
@@ -325,6 +383,7 @@
     <option value="Business">Business</option>
     <option value="Autre">Autre</option>
   </select>
+
 </div>
 
 <div class="form-group">
@@ -361,9 +420,7 @@ let transactions =
 let currentType = "expense";
 
 function formatMoney(amount) {
-
   return new Intl.NumberFormat("fr-FR").format(amount) + " FCFA";
-
 }
 
 function openModal(type) {
@@ -385,13 +442,10 @@ function openModal(type) {
     new Date().toISOString().split("T")[0];
 
   document.getElementById("modal").classList.add("active");
-
 }
 
 function closeModal() {
-
   document.getElementById("modal").classList.remove("active");
-
 }
 
 function saveTransaction() {
@@ -409,43 +463,27 @@ function saveTransaction() {
     document.getElementById("date").value;
 
   if (!description) {
-
     alert("Veuillez entrer une description.");
-
     return;
-
   }
 
   if (!amount || amount <= 0) {
-
     alert("Veuillez entrer un montant valide.");
-
     return;
-
   }
 
   if (!date) {
-
     alert("Veuillez sélectionner une date.");
-
     return;
-
   }
 
   transactions.push({
-
     id: Date.now(),
-
     description: description,
-
     amount: amount,
-
     type: currentType,
-
     category: category,
-
     date: date
-
   });
 
   localStorage.setItem(
@@ -456,7 +494,6 @@ function saveTransaction() {
   closeModal();
 
   updateDashboard();
-
 }
 
 function deleteTransaction(id) {
@@ -470,7 +507,6 @@ function deleteTransaction(id) {
   );
 
   updateDashboard();
-
 }
 
 function updateDashboard() {
@@ -481,13 +517,9 @@ function updateDashboard() {
   transactions.forEach(transaction => {
 
     if (transaction.type === "income") {
-
       totalIncome += transaction.amount;
-
     } else {
-
       totalExpense += transaction.amount;
-
     }
 
   });
@@ -504,19 +536,69 @@ function updateDashboard() {
   document.getElementById("balance").textContent =
     formatMoney(balance);
 
+  updateTransactions();
+}
+
+function updateTransactions() {
+
+  const search =
+    document.getElementById("search").value
+      .toLowerCase()
+      .trim();
+
+  const typeFilter =
+    document.getElementById("typeFilter").value;
+
+  const categoryFilter =
+    document.getElementById("categoryFilter").value;
+
+  const dateFilter =
+    document.getElementById("dateFilter").value;
+
+  const filtered =
+    transactions.filter(transaction => {
+
+      const matchesSearch =
+        transaction.description
+          .toLowerCase()
+          .includes(search) ||
+        transaction.category
+          .toLowerCase()
+          .includes(search);
+
+      const matchesType =
+        typeFilter === "all" ||
+        transaction.type === typeFilter;
+
+      const matchesCategory =
+        categoryFilter === "all" ||
+        transaction.category === categoryFilter;
+
+      const matchesDate =
+        !dateFilter ||
+        transaction.date === dateFilter;
+
+      return (
+        matchesSearch &&
+        matchesType &&
+        matchesCategory &&
+        matchesDate
+      );
+
+    });
+
   const list =
     document.getElementById("transactionList");
 
-  if (transactions.length === 0) {
+  if (filtered.length === 0) {
 
     list.innerHTML =
-      '<div class="empty">Aucune transaction</div>';
+      '<div class="empty">Aucune transaction trouvée.</div>';
 
     return;
-
   }
 
-  list.innerHTML = transactions
+  list.innerHTML = filtered
     .slice()
     .reverse()
     .map(transaction => {
@@ -571,7 +653,6 @@ function updateDashboard() {
 
     })
     .join("");
-
 }
 
 updateDashboard();
