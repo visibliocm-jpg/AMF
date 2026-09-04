@@ -102,6 +102,11 @@ button {
     color: white;
 }
 
+.btn-budget {
+    background: #2563eb;
+    color: white;
+}
+
 button:hover {
     opacity: 0.9;
 }
@@ -118,7 +123,160 @@ section h2 {
     margin-top: 0;
 }
 
-/* Filtres */
+/* BUDGETS */
+
+.budget-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 15px;
+    margin-bottom: 20px;
+}
+
+.budget-header h2 {
+    margin: 0;
+}
+
+.budget-list {
+    display: grid;
+    gap: 15px;
+}
+
+.budget-item {
+    border: 1px solid #e5e7eb;
+    border-radius: 12px;
+    padding: 18px;
+}
+
+.budget-top {
+    display: flex;
+    justify-content: space-between;
+    gap: 15px;
+    margin-bottom: 10px;
+}
+
+.budget-name {
+    font-weight: bold;
+    font-size: 17px;
+}
+
+.budget-amount {
+    text-align: right;
+    font-size: 14px;
+    color: #6b7280;
+}
+
+.progress-background {
+    height: 14px;
+    background: #e5e7eb;
+    border-radius: 20px;
+    overflow: hidden;
+    margin: 10px 0;
+}
+
+.progress-bar {
+    height: 100%;
+    border-radius: 20px;
+    transition: width 0.3s;
+}
+
+.progress-normal {
+    background: #2563eb;
+}
+
+.progress-warning {
+    background: #f59e0b;
+}
+
+.progress-danger {
+    background: #dc2626;
+}
+
+.budget-bottom {
+    display: flex;
+    justify-content: space-between;
+    gap: 10px;
+    font-size: 13px;
+}
+
+.budget-warning {
+    color: #d97706;
+    font-weight: bold;
+}
+
+.budget-danger {
+    color: #dc2626;
+    font-weight: bold;
+}
+
+.budget-ok {
+    color: #16a34a;
+    font-weight: bold;
+}
+
+.delete-budget {
+    background: #fee2e2;
+    color: #b91c1c;
+    padding: 7px 10px;
+    margin-top: 12px;
+}
+
+.empty {
+    color: #6b7280;
+    text-align: center;
+    padding: 20px;
+}
+
+/* STATISTIQUES */
+
+.statistics-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 20px;
+}
+
+.stat-box {
+    background: #f9fafb;
+    border-radius: 12px;
+    padding: 18px;
+}
+
+.chart-row {
+    margin-bottom: 18px;
+}
+
+.chart-label {
+    display: flex;
+    justify-content: space-between;
+    margin-bottom: 7px;
+    font-size: 14px;
+}
+
+.bar-background {
+    height: 14px;
+    background: #e5e7eb;
+    border-radius: 20px;
+    overflow: hidden;
+}
+
+.bar {
+    height: 100%;
+    border-radius: 20px;
+}
+
+.income-bar {
+    background: #16a34a;
+}
+
+.expense-bar {
+    background: #dc2626;
+}
+
+.category-bar {
+    background: #2563eb;
+}
+
+/* FILTRES */
 
 .filters {
     display: grid;
@@ -136,11 +294,11 @@ select {
     background: white;
 }
 
-/* Transactions */
+/* TRANSACTIONS */
 
 .transaction {
     display: grid;
-    grid-template-columns: 1fr auto auto auto;
+    grid-template-columns: 1fr auto auto;
     gap: 15px;
     align-items: center;
     padding: 15px 0;
@@ -171,66 +329,7 @@ select {
     padding: 8px 12px;
 }
 
-/* Statistiques */
-
-.statistics-grid {
-    display: grid;
-    grid-template-columns: 1fr 1fr;
-    gap: 20px;
-}
-
-.stat-box {
-    background: #f9fafb;
-    border-radius: 12px;
-    padding: 18px;
-}
-
-.chart-row {
-    margin-bottom: 18px;
-}
-
-.chart-label {
-    display: flex;
-    justify-content: space-between;
-    margin-bottom: 7px;
-    font-size: 14px;
-}
-
-.chart-label strong {
-    font-weight: bold;
-}
-
-.bar-background {
-    height: 14px;
-    background: #e5e7eb;
-    border-radius: 20px;
-    overflow: hidden;
-}
-
-.bar {
-    height: 100%;
-    border-radius: 20px;
-}
-
-.income-bar {
-    background: #16a34a;
-}
-
-.expense-bar {
-    background: #dc2626;
-}
-
-.category-bar {
-    background: #2563eb;
-}
-
-.empty {
-    color: #6b7280;
-    text-align: center;
-    padding: 20px;
-}
-
-/* Modal */
+/* MODAL */
 
 .modal {
     display: none;
@@ -240,6 +339,7 @@ select {
     justify-content: center;
     align-items: center;
     padding: 20px;
+    z-index: 10;
 }
 
 .modal-content {
@@ -280,7 +380,7 @@ select {
     color: white;
 }
 
-/* Mobile */
+/* MOBILE */
 
 @media (max-width: 850px) {
 
@@ -313,7 +413,11 @@ select {
 
     .transaction {
         grid-template-columns: 1fr;
-        gap: 7px;
+    }
+
+    .budget-header {
+        align-items: stretch;
+        flex-direction: column;
     }
 }
 </style>
@@ -361,17 +465,40 @@ select {
 
         <button
             class="btn-income"
-            onclick="openModal('income')">
+            onclick="openTransactionModal('income')">
             + Ajouter un revenu
         </button>
 
         <button
             class="btn-expense"
-            onclick="openModal('expense')">
+            onclick="openTransactionModal('expense')">
             + Ajouter une dépense
         </button>
 
     </div>
+
+    <!-- BUDGETS -->
+
+    <section>
+
+        <div class="budget-header">
+
+            <h2>🎯 Mes budgets</h2>
+
+            <button
+                class="btn-budget"
+                onclick="openBudgetModal()">
+                + Ajouter un budget
+            </button>
+
+        </div>
+
+        <div
+            id="budgetList"
+            class="budget-list">
+        </div>
+
+    </section>
 
     <!-- STATISTIQUES -->
 
@@ -457,13 +584,14 @@ select {
 
 </div>
 
-<!-- MODAL -->
+
+<!-- MODAL TRANSACTION -->
 
 <div class="modal" id="transactionModal">
 
     <div class="modal-content">
 
-        <h2 id="modalTitle">
+        <h2 id="transactionModalTitle">
             Ajouter une transaction
         </h2>
 
@@ -525,7 +653,7 @@ select {
 
             <button
                 class="cancel-btn"
-                onclick="closeModal()">
+                onclick="closeTransactionModal()">
                 Annuler
             </button>
 
@@ -541,15 +669,85 @@ select {
 
 </div>
 
+
+<!-- MODAL BUDGET -->
+
+<div class="modal" id="budgetModal">
+
+    <div class="modal-content">
+
+        <h2>🎯 Ajouter un budget</h2>
+
+        <div class="form-group">
+
+            <label>Catégorie</label>
+
+            <select id="budgetCategory">
+
+                <option>Alimentation</option>
+                <option>Transport</option>
+                <option>Logement</option>
+                <option>Santé</option>
+                <option>Éducation</option>
+                <option>Shopping</option>
+                <option>Loisirs</option>
+                <option>Autre</option>
+
+            </select>
+
+        </div>
+
+        <div class="form-group">
+
+            <label>Budget mensuel (FCFA)</label>
+
+            <input
+                type="number"
+                id="budgetAmount"
+                placeholder="Ex : 100000"
+                min="1">
+
+        </div>
+
+        <div class="modal-actions">
+
+            <button
+                class="cancel-btn"
+                onclick="closeBudgetModal()">
+                Annuler
+            </button>
+
+            <button
+                class="save-btn"
+                onclick="saveBudget()">
+                Enregistrer
+            </button>
+
+        </div>
+
+    </div>
+
+</div>
+
+
 <script>
+
+/* =========================
+   DONNÉES
+========================= */
 
 let transactions =
     JSON.parse(localStorage.getItem("amf_transactions")) || [];
 
+let budgets =
+    JSON.parse(localStorage.getItem("amf_budgets")) || [];
+
 let currentType = "expense";
 
 
-/* FORMAT MONÉTAIRE */
+/* =========================
+   FORMAT MONÉTAIRE
+========================= */
 
 function formatMoney(amount) {
 
@@ -559,15 +757,19 @@ function formatMoney(amount) {
 }
 
 
-/* OUVRIR MODAL */
+/* =========================
+   TRANSACTIONS
+========================= */
 
-function openModal(type) {
+function openTransactionModal(type) {
 
     currentType = type;
 
-    document.getElementById("transactionModal").style.display = "flex";
+    document.getElementById("transactionModal")
+        .style.display = "flex";
 
-    document.getElementById("modalTitle").textContent =
+    document.getElementById("transactionModalTitle")
+        .textContent =
         type === "income"
         ? "Ajouter un revenu"
         : "Ajouter une dépense";
@@ -585,24 +787,24 @@ function openModal(type) {
 }
 
 
-/* FERMER MODAL */
+function closeTransactionModal() {
 
-function closeModal() {
-
-    document.getElementById("transactionModal").style.display = "none";
+    document.getElementById("transactionModal")
+        .style.display = "none";
 
 }
 
 
-/* ENREGISTRER */
-
 function saveTransaction() {
 
     const description =
-        document.getElementById("description").value.trim();
+        document.getElementById("description")
+        .value.trim();
 
     const amount =
-        Number(document.getElementById("amount").value);
+        Number(
+            document.getElementById("amount").value
+        );
 
     const category =
         document.getElementById("category").value;
@@ -612,7 +814,9 @@ function saveTransaction() {
 
     if (!description || !amount || amount <= 0 || !date) {
 
-        alert("Veuillez remplir correctement tous les champs.");
+        alert(
+            "Veuillez remplir correctement tous les champs."
+        );
 
         return;
     }
@@ -640,14 +844,11 @@ function saveTransaction() {
         JSON.stringify(transactions)
     );
 
-    closeModal();
+    closeTransactionModal();
 
     updateDashboard();
-
 }
 
-
-/* SUPPRIMER */
 
 function deleteTransaction(id) {
 
@@ -664,11 +865,12 @@ function deleteTransaction(id) {
     );
 
     updateDashboard();
-
 }
 
 
-/* TABLEAU DE BORD */
+/* =========================
+   DASHBOARD
+========================= */
 
 function updateDashboard() {
 
@@ -679,11 +881,11 @@ function updateDashboard() {
 
         if (t.type === "income") {
 
-            totalIncome += t.amount;
+            totalIncome += Number(t.amount);
 
         } else {
 
-            totalExpense += t.amount;
+            totalExpense += Number(t.amount);
 
         }
 
@@ -692,30 +894,35 @@ function updateDashboard() {
     const balance =
         totalIncome - totalExpense;
 
-    document.getElementById("balance").textContent =
+    document.getElementById("balance")
+        .textContent =
         formatMoney(balance);
 
-    document.getElementById("totalIncome").textContent =
+    document.getElementById("totalIncome")
+        .textContent =
         formatMoney(totalIncome);
 
-    document.getElementById("totalExpense").textContent =
+    document.getElementById("totalExpense")
+        .textContent =
         formatMoney(totalExpense);
 
     updateTransactions();
 
     updateStatistics();
 
+    updateBudgets();
 }
 
 
-/* TRANSACTIONS */
+/* =========================
+   LISTE DES TRANSACTIONS
+========================= */
 
 function updateTransactions() {
 
     const search =
         document.getElementById("searchInput")
-        .value
-        .toLowerCase();
+        .value.toLowerCase();
 
     const type =
         document.getElementById("typeFilter").value;
@@ -780,7 +987,9 @@ function updateTransactions() {
         filtered.map(t => {
 
             const sign =
-                t.type === "income" ? "+" : "-";
+                t.type === "income"
+                ? "+"
+                : "-";
 
             const amountClass =
                 t.type === "income"
@@ -806,7 +1015,7 @@ function updateTransactions() {
                     </div>
 
                     <div class="transaction-amount ${amountClass}">
-                        ${sign} ${formatMoney(t.amount)}
+                        ${sign} ${formatMoney(Number(t.amount))}
                     </div>
 
                     <button
@@ -820,11 +1029,12 @@ function updateTransactions() {
             `;
 
         }).join("");
-
 }
 
 
-/* STATISTIQUES */
+/* =========================
+   STATISTIQUES
+========================= */
 
 function updateStatistics() {
 
@@ -835,26 +1045,25 @@ function updateStatistics() {
 
     transactions.forEach(t => {
 
+        const amount = Number(t.amount);
+
         if (t.type === "income") {
 
-            totalIncome += t.amount;
+            totalIncome += amount;
 
         } else {
 
-            totalExpense += t.amount;
+            totalExpense += amount;
 
             if (!categories[t.category]) {
                 categories[t.category] = 0;
             }
 
-            categories[t.category] += t.amount;
-
+            categories[t.category] += amount;
         }
 
     });
 
-
-    /* REVENUS VS DÉPENSES */
 
     const comparison =
         document.getElementById("comparisonChart");
@@ -906,7 +1115,6 @@ function updateStatistics() {
 
             </div>
 
-
             <div class="chart-row">
 
                 <div class="chart-label">
@@ -929,13 +1137,9 @@ function updateStatistics() {
                 </div>
 
             </div>
-
         `;
-
     }
 
-
-    /* DÉPENSES PAR CATÉGORIE */
 
     const categoryChart =
         document.getElementById("categoryChart");
@@ -952,7 +1156,6 @@ function updateStatistics() {
             </div>`;
 
         return;
-
     }
 
     const maxCategory =
@@ -1000,24 +1203,300 @@ function updateStatistics() {
             `;
 
         }).join("");
+}
+
+
+/* =========================
+   BUDGETS
+========================= */
+
+function openBudgetModal() {
+
+    document.getElementById("budgetModal")
+        .style.display = "flex";
+
+    document.getElementById("budgetAmount")
+        .value = "";
 
 }
 
 
-/* SÉCURISER L'AFFICHAGE DU TEXTE */
+function closeBudgetModal() {
+
+    document.getElementById("budgetModal")
+        .style.display = "none";
+
+}
+
+
+function saveBudget() {
+
+    const category =
+        document.getElementById("budgetCategory")
+        .value;
+
+    const amount =
+        Number(
+            document.getElementById("budgetAmount")
+            .value
+        );
+
+    if (!amount || amount <= 0) {
+
+        alert("Veuillez entrer un budget valide.");
+
+        return;
+    }
+
+
+    const existing =
+        budgets.find(
+            b => b.category === category
+        );
+
+
+    if (existing) {
+
+        existing.amount = amount;
+
+    } else {
+
+        budgets.push({
+
+            id: Date.now(),
+
+            category: category,
+
+            amount: amount
+
+        });
+
+    }
+
+
+    localStorage.setItem(
+        "amf_budgets",
+        JSON.stringify(budgets)
+    );
+
+    closeBudgetModal();
+
+    updateBudgets();
+}
+
+
+function deleteBudget(id) {
+
+    if (!confirm("Supprimer ce budget ?")) {
+        return;
+    }
+
+    budgets =
+        budgets.filter(b => b.id !== id);
+
+    localStorage.setItem(
+        "amf_budgets",
+        JSON.stringify(budgets)
+    );
+
+    updateBudgets();
+}
+
+
+function updateBudgets() {
+
+    const container =
+        document.getElementById("budgetList");
+
+    if (budgets.length === 0) {
+
+        container.innerHTML =
+            `<div class="empty">
+                Aucun budget configuré.
+                <br>
+                Cliquez sur « + Ajouter un budget » pour commencer.
+            </div>`;
+
+        return;
+    }
+
+
+    const today = new Date();
+
+    const currentMonth =
+        today.getFullYear() +
+        "-" +
+        String(today.getMonth() + 1)
+            .padStart(2, "0");
+
+
+    container.innerHTML =
+        budgets.map(budget => {
+
+            let spent = 0;
+
+            transactions.forEach(t => {
+
+                if (
+                    t.type === "expense" &&
+                    t.category === budget.category &&
+                    t.date.startsWith(currentMonth)
+                ) {
+
+                    spent += Number(t.amount);
+
+                }
+
+            });
+
+
+            const budgetAmount =
+                Number(budget.amount);
+
+            const remaining =
+                budgetAmount - spent;
+
+            const percentage =
+                budgetAmount > 0
+                ? (spent / budgetAmount) * 100
+                : 0;
+
+            const progress =
+                Math.min(percentage, 100);
+
+
+            let progressClass =
+                "progress-normal";
+
+            let statusClass =
+                "budget-ok";
+
+            let statusText =
+                "Budget maîtrisé";
+
+
+            if (percentage >= 100) {
+
+                progressClass =
+                    "progress-danger";
+
+                statusClass =
+                    "budget-danger";
+
+                statusText =
+                    "⚠️ Budget dépassé";
+
+            } else if (percentage >= 80) {
+
+                progressClass =
+                    "progress-warning";
+
+                statusClass =
+                    "budget-warning";
+
+                statusText =
+                    "⚠️ Attention au budget";
+
+            }
+
+
+            return `
+
+                <div class="budget-item">
+
+                    <div class="budget-top">
+
+                        <div class="budget-name">
+                            ${escapeHTML(budget.category)}
+                        </div>
+
+                        <div class="budget-amount">
+
+                            Budget :
+                            ${formatMoney(budgetAmount)}
+
+                            <br>
+
+                            Dépensé :
+                            ${formatMoney(spent)}
+
+                        </div>
+
+                    </div>
+
+
+                    <div class="progress-background">
+
+                        <div
+                            class="progress-bar ${progressClass}"
+                            style="width:${progress}%">
+                        </div>
+
+                    </div>
+
+
+                    <div class="budget-bottom">
+
+                        <span class="${statusClass}">
+                            ${statusText}
+                        </span>
+
+                        <span>
+                            ${percentage.toFixed(0)}% utilisé
+                        </span>
+
+                    </div>
+
+
+                    <div class="budget-bottom">
+
+                        <span>
+
+                            ${
+                                remaining >= 0
+                                ? "Reste : " + formatMoney(remaining)
+                                : "Dépassement : " + formatMoney(Math.abs(remaining))
+                            }
+
+                        </span>
+
+                    </div>
+
+
+                    <button
+                        class="delete-budget"
+                        onclick="deleteBudget(${budget.id})">
+
+                        Supprimer le budget
+
+                    </button>
+
+                </div>
+
+            `;
+
+        }).join("");
+}
+
+
+/* =========================
+   SÉCURITÉ
+========================= */
 
 function escapeHTML(text) {
 
-    const div = document.createElement("div");
+    const div =
+        document.createElement("div");
 
     div.textContent = text;
 
     return div.innerHTML;
-
 }
 
 
-/* INITIALISATION */
+/* =========================
+   INITIALISATION
+========================= */
 
 updateDashboard();
 
