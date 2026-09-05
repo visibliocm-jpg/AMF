@@ -1,0 +1,711 @@
+<!DOCTYPE html>
+<html lang="fr">
+
+<head>
+
+<meta charset="UTF-8">
+
+<meta
+    name="viewport"
+    content="width=device-width, initial-scale=1.0"
+>
+
+<title>AMF — Connexion</title>
+
+<style>
+
+* {
+    box-sizing: border-box;
+}
+
+body {
+
+    margin: 0;
+
+    min-height: 100vh;
+
+    font-family: Arial, sans-serif;
+
+    background:
+        linear-gradient(
+            135deg,
+            #eff6ff,
+            #f8fafc
+        );
+
+    display: flex;
+
+    justify-content: center;
+
+    align-items: center;
+
+    padding: 20px;
+}
+
+.container {
+
+    width: 100%;
+
+    max-width: 430px;
+}
+
+.logo {
+
+    text-align: center;
+
+    margin-bottom: 20px;
+}
+
+.logo h1 {
+
+    margin: 0;
+
+    color: #2563eb;
+
+    font-size: 42px;
+}
+
+.logo p {
+
+    margin-top: 5px;
+
+    color: #64748b;
+
+    font-size: 15px;
+}
+
+.card {
+
+    background: white;
+
+    border-radius: 20px;
+
+    padding: 28px;
+
+    box-shadow:
+        0 10px 35px
+        rgba(0, 0, 0, 0.08);
+}
+
+.tabs {
+
+    display: flex;
+
+    margin-bottom: 25px;
+
+    background: #f1f5f9;
+
+    border-radius: 12px;
+
+    padding: 4px;
+}
+
+.tab {
+
+    flex: 1;
+
+    border: none;
+
+    background: transparent;
+
+    padding: 12px;
+
+    border-radius: 9px;
+
+    cursor: pointer;
+
+    font-weight: bold;
+
+    color: #64748b;
+}
+
+.tab.active {
+
+    background: white;
+
+    color: #2563eb;
+
+    box-shadow:
+        0 2px 6px
+        rgba(0,0,0,0.08);
+}
+
+.form {
+
+    display: none;
+}
+
+.form.active {
+
+    display: block;
+}
+
+.form-group {
+
+    margin-bottom: 16px;
+}
+
+.form-group label {
+
+    display: block;
+
+    margin-bottom: 7px;
+
+    font-size: 14px;
+
+    font-weight: bold;
+
+    color: #334155;
+}
+
+.form-group input {
+
+    width: 100%;
+
+    padding: 13px;
+
+    border: 1px solid #cbd5e1;
+
+    border-radius: 10px;
+
+    font-size: 15px;
+
+    outline: none;
+}
+
+.form-group input:focus {
+
+    border-color: #2563eb;
+
+    box-shadow:
+        0 0 0 3px
+        rgba(37,99,235,0.1);
+}
+
+.submit {
+
+    width: 100%;
+
+    padding: 13px;
+
+    border: none;
+
+    border-radius: 10px;
+
+    background: #2563eb;
+
+    color: white;
+
+    font-size: 15px;
+
+    font-weight: bold;
+
+    cursor: pointer;
+
+    margin-top: 5px;
+}
+
+.submit:hover {
+
+    background: #1d4ed8;
+}
+
+.message {
+
+    display: none;
+
+    padding: 12px;
+
+    margin-bottom: 16px;
+
+    border-radius: 10px;
+
+    font-size: 14px;
+
+    line-height: 1.5;
+}
+
+.message.success {
+
+    display: block;
+
+    background: #dcfce7;
+
+    color: #166534;
+}
+
+.message.error {
+
+    display: block;
+
+    background: #fee2e2;
+
+    color: #991b1b;
+}
+
+.info {
+
+    text-align: center;
+
+    margin-top: 20px;
+
+    font-size: 12px;
+
+    color: #94a3b8;
+
+    line-height: 1.5;
+}
+
+</style>
+
+</head>
+
+
+<body>
+
+<div class="container">
+
+    <div class="logo">
+
+        <h1>💰 AMF</h1>
+
+        <p>Application de gestion de finances</p>
+
+    </div>
+
+
+    <div class="card">
+
+        <div class="tabs">
+
+            <button
+                class="tab active"
+                id="loginTab"
+                onclick="showLogin()"
+            >
+                Connexion
+            </button>
+
+            <button
+                class="tab"
+                id="registerTab"
+                onclick="showRegister()"
+            >
+                Créer un compte
+            </button>
+
+        </div>
+
+
+        <div
+            class="message"
+            id="message"
+        ></div>
+
+
+        <!-- CONNEXION -->
+
+        <form
+            class="form active"
+            id="loginForm"
+            onsubmit="connecter(event)"
+        >
+
+            <div class="form-group">
+
+                <label>
+                    Adresse e-mail
+                </label>
+
+                <input
+                    type="email"
+                    id="loginEmail"
+                    placeholder="exemple@email.com"
+                    required
+                >
+
+            </div>
+
+
+            <div class="form-group">
+
+                <label>
+                    Mot de passe
+                </label>
+
+                <input
+                    type="password"
+                    id="loginPassword"
+                    placeholder="Votre mot de passe"
+                    required
+                >
+
+            </div>
+
+
+            <button
+                type="submit"
+                class="submit"
+            >
+                🔐 Se connecter
+            </button>
+
+        </form>
+
+
+        <!-- INSCRIPTION -->
+
+        <form
+            class="form"
+            id="registerForm"
+            onsubmit="inscrire(event)"
+        >
+
+            <div class="form-group">
+
+                <label>
+                    Votre nom
+                </label>
+
+                <input
+                    type="text"
+                    id="registerName"
+                    placeholder="Votre nom"
+                    required
+                >
+
+            </div>
+
+
+            <div class="form-group">
+
+                <label>
+                    Adresse e-mail
+                </label>
+
+                <input
+                    type="email"
+                    id="registerEmail"
+                    placeholder="exemple@email.com"
+                    required
+                >
+
+            </div>
+
+
+            <div class="form-group">
+
+                <label>
+                    Mot de passe
+                </label>
+
+                <input
+                    type="password"
+                    id="registerPassword"
+                    placeholder="Créer un mot de passe"
+                    minlength="6"
+                    required
+                >
+
+            </div>
+
+
+            <div class="form-group">
+
+                <label>
+                    Confirmer le mot de passe
+                </label>
+
+                <input
+                    type="password"
+                    id="registerPasswordConfirm"
+                    placeholder="Confirmer le mot de passe"
+                    minlength="6"
+                    required
+                >
+
+            </div>
+
+
+            <button
+                type="submit"
+                class="submit"
+            >
+                ✨ Créer mon compte
+            </button>
+
+        </form>
+
+    </div>
+
+
+    <div class="info">
+
+        AMF — Gestion simple et intelligente de vos finances.
+
+    </div>
+
+</div>
+
+
+<!--
+    Les deux modules que nous avons créés
+    précédemment.
+-->
+
+<script src="compte.js"></script>
+
+<script src="donnees.js"></script>
+
+
+<script>
+
+/* =========================================
+   AMF — INTERFACE DE CONNEXION
+========================================= */
+
+
+function afficherMessage(
+    texte,
+    type
+) {
+
+    const message =
+        document.getElementById("message");
+
+    message.textContent = texte;
+
+    message.className =
+        "message " + type;
+}
+
+
+/* =========================
+   AFFICHER CONNEXION
+========================= */
+
+function showLogin() {
+
+    document
+        .getElementById("loginForm")
+        .classList.add("active");
+
+    document
+        .getElementById("registerForm")
+        .classList.remove("active");
+
+
+    document
+        .getElementById("loginTab")
+        .classList.add("active");
+
+    document
+        .getElementById("registerTab")
+        .classList.remove("active");
+
+
+    document
+        .getElementById("message")
+        .className = "message";
+}
+
+
+/* =========================
+   AFFICHER INSCRIPTION
+========================= */
+
+function showRegister() {
+
+    document
+        .getElementById("registerForm")
+        .classList.add("active");
+
+    document
+        .getElementById("loginForm")
+        .classList.remove("active");
+
+
+    document
+        .getElementById("registerTab")
+        .classList.add("active");
+
+    document
+        .getElementById("loginTab")
+        .classList.remove("active");
+
+
+    document
+        .getElementById("message")
+        .className = "message";
+}
+
+
+/* =========================
+   INSCRIPTION
+========================= */
+
+function inscrire(event) {
+
+    event.preventDefault();
+
+
+    const nom =
+        document
+            .getElementById("registerName")
+            .value
+            .trim();
+
+
+    const email =
+        document
+            .getElementById("registerEmail")
+            .value
+            .trim();
+
+
+    const password =
+        document
+            .getElementById("registerPassword")
+            .value;
+
+
+    const confirmation =
+        document
+            .getElementById("registerPasswordConfirm")
+            .value;
+
+
+    if (password !== confirmation) {
+
+        afficherMessage(
+            "Les deux mots de passe ne correspondent pas.",
+            "error"
+        );
+
+        return;
+    }
+
+
+    /*
+       Pour cette première étape,
+       nous ne connectons pas encore
+       le mot de passe au système
+       de comptes définitif.
+
+       Nous allons sécuriser cette partie
+       lors de l'étape dédiée à
+       l'authentification.
+    */
+
+
+    const resultat =
+        creerCompteAMF(
+            nom,
+            email
+        );
+
+
+    if (!resultat.success) {
+
+        afficherMessage(
+            resultat.message,
+            "error"
+        );
+
+        return;
+    }
+
+
+    /*
+       Création de l'espace personnel.
+    */
+
+    creerEspacePersonnelAMF(
+        resultat.compte.id
+    );
+
+
+    afficherMessage(
+        "🎉 Votre compte AMF a été créé avec succès !",
+        "success"
+    );
+
+
+    document
+        .getElementById("registerForm")
+        .reset();
+
+
+    setTimeout(
+        showLogin,
+        1200
+    );
+}
+
+
+/* =========================
+   CONNEXION
+========================= */
+
+function connecter(event) {
+
+    event.preventDefault();
+
+
+    const email =
+        document
+            .getElementById("loginEmail")
+            .value
+            .trim();
+
+
+    const compte =
+        trouverCompteAMF(email);
+
+
+    if (!compte) {
+
+        afficherMessage(
+            "Aucun compte AMF ne correspond à cette adresse e-mail.",
+            "error"
+        );
+
+        return;
+    }
+
+
+    /*
+       Pour le moment nous vérifions
+       uniquement l'existence du compte.
+
+       La vraie gestion sécurisée du
+       mot de passe sera ajoutée dans
+       une étape séparée.
+    */
+
+
+    definirCompteActifAMF(
+        compte
+    );
+
+
+    afficherMessage(
+        "✅ Connexion réussie !",
+        "success"
+    );
+
+
+    /*
+       Pour l'instant nous ne redirigeons
+       pas encore vers index.html.
+       Nous allons connecter les deux
+       parties après avoir terminé
+       l'architecture des comptes.
+    */
+}
+
+</script>
+
+</body>
+
+</html>
