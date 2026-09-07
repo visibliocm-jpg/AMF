@@ -651,6 +651,26 @@ button:hover {
 <header>
     <h1>💰 AMF</h1>
     <p>Application de gestion de finances</p>
+    
+    <!-- =========================================
+     AMF — ESPACE UTILISATEUR
+========================================= -->
+
+<div id="espaceUtilisateurAMF">
+
+    <span id="nomUtilisateurAMF">
+        👤 Visiteur
+    </span>
+
+    <button
+        id="boutonCompteAMF"
+        type="button"
+        onclick="ouvrirCompteAMF()"
+    >
+        Mon compte
+    </button>
+
+</div>
 </header>
 
 <div class="container">
@@ -2201,6 +2221,63 @@ window.addEventListener("click", function(event) {
 <script src="donnees.js"></script>
 <script src="authentification.js"></script>
 <script src="session.js"></script>
+    <script>
+
+function afficherUtilisateurAMF() {
+
+    const utilisateur =
+        obtenirUtilisateurConnecteAMF();
+
+    const nom =
+        document.getElementById(
+            "nomUtilisateurAMF"
+        );
+
+    if (!nom) {
+        return;
+    }
+
+    if (utilisateur) {
+
+        nom.textContent =
+            "👤 " + utilisateur.nom;
+
+    } else {
+
+        nom.textContent =
+            "👤 Visiteur";
+    }
+}
+
+
+function ouvrirCompteAMF() {
+
+    const utilisateur =
+        obtenirUtilisateurConnecteAMF();
+
+    if (!utilisateur) {
+
+        window.location.href =
+            "connexion.html";
+
+        return;
+    }
+
+    alert(
+        "Bienvenue " +
+        utilisateur.nom +
+        " !\n\n" +
+        "Votre espace personnel AMF sera développé ici."
+    );
+}
+
+
+document.addEventListener(
+    "DOMContentLoaded",
+    afficherUtilisateurAMF
+);
+
+</script>
     
 </body>
 </html>
