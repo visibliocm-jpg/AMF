@@ -457,6 +457,8 @@ body {
 
 <script src="donnees.js"></script>
 
+<script src="authentification.js"></script>
+
 
 <script>
 
@@ -544,10 +546,9 @@ function showRegister() {
    INSCRIPTION
 ========================= */
 
-function inscrire(event) {
+async function inscrire(event) {
 
     event.preventDefault();
-
 
     const nom =
         document
@@ -555,25 +556,24 @@ function inscrire(event) {
             .value
             .trim();
 
-
     const email =
         document
             .getElementById("registerEmail")
             .value
             .trim();
 
-
     const password =
         document
             .getElementById("registerPassword")
             .value;
-
 
     const confirmation =
         document
             .getElementById("registerPasswordConfirm")
             .value;
 
+
+    /* Vérification des mots de passe */
 
     if (password !== confirmation) {
 
@@ -586,17 +586,7 @@ function inscrire(event) {
     }
 
 
-    /*
-       Pour cette première étape,
-       nous ne connectons pas encore
-       le mot de passe au système
-       de comptes définitif.
-
-       Nous allons sécuriser cette partie
-       lors de l'étape dédiée à
-       l'authentification.
-    */
-
+    /* Création du compte */
 
     const resultat =
         creerCompteAMF(
@@ -616,9 +606,32 @@ function inscrire(event) {
     }
 
 
-    /*
-       Création de l'espace personnel.
-    */
+    /* Création de l'authentification */
+
+    const authentification =
+        await creerAuthentificationAMF(
+            resultat.compte.id,
+            password
+        );
+
+
+    if (!authentification.success) {
+
+        /*
+           Si l'authentification échoue,
+           on informe l'utilisateur.
+        */
+
+        afficherMessage(
+            authentification.message,
+            "error"
+        );
+
+        return;
+    }
+
+
+    /* Création de l'espace personnel */
 
     creerEspacePersonnelAMF(
         resultat.compte.id
@@ -636,37 +649,54 @@ function inscrire(event) {
         .reset();
 
 
+    /*
+       Retour automatique vers
+       l'écran de connexion.
+    */
+
     setTimeout(
         showLogin,
         1200
     );
 }
 
-
 /* =========================
    CONNEXION
 ========================= */
 
-function connecter(event) {
+async function inscrire(event) {
 
     event.preventDefault();
 
-
-    const email =
+    const nom =
         document
-            .getElementById("loginEmail")
+            .getElementById("registerName")
             .value
             .trim();
 
+    const email =
+        document
+            .getElementById("registerEmail")
+            .value
+            .trim();
 
-    const compte =
-        trouverCompteAMF(email);
+    const password =
+        document
+            .getElementById("registerPassword")
+            .value;
+
+    const confirmation =
+        document
+            .getElementById("registerPasswordConfirm")
+            .value;
 
 
-    if (!compte) {
+    /* Vérification des mots de passe */
+
+    if (password !== confirmation) {
 
         afficherMessage(
-            "Aucun compte AMF ne correspond à cette adresse e-mail.",
+            "Les deux mots de passe ne correspondent pas.",
             "error"
         );
 
@@ -674,34 +704,78 @@ function connecter(event) {
     }
 
 
-    /*
-       Pour le moment nous vérifions
-       uniquement l'existence du compte.
+    /* Création du compte */
 
-       La vraie gestion sécurisée du
-       mot de passe sera ajoutée dans
-       une étape séparée.
-    */
+    const resultat =
+        creerCompteAMF(
+            nom,
+            email
+        );
 
 
-    definirCompteActifAMF(
-        compte
+    if (!resultat.success) {
+
+        afficherMessage(
+            resultat.message,
+            "error"
+        );
+
+        return;
+    }
+
+
+    /* Création de l'authentification */
+
+    const authentification =
+        await creerAuthentificationAMF(
+            resultat.compte.id,
+            password
+        );
+
+
+    if (!authentification.success) {
+
+        /*
+           Si l'authentification échoue,
+           on informe l'utilisateur.
+        */
+
+        afficherMessage(
+            authentification.message,
+            "error"
+        );
+
+        return;
+    }
+
+
+    /* Création de l'espace personnel */
+
+    creerEspacePersonnelAMF(
+        resultat.compte.id
     );
 
 
     afficherMessage(
-        "✅ Connexion réussie !",
+        "🎉 Votre compte AMF a été créé avec succès !",
         "success"
     );
 
 
+    document
+        .getElementById("registerForm")
+        .reset();
+
+
     /*
-       Pour l'instant nous ne redirigeons
-       pas encore vers index.html.
-       Nous allons connecter les deux
-       parties après avoir terminé
-       l'architecture des comptes.
+       Retour automatique vers
+       l'écran de connexion.
     */
+
+    setTimeout(
+        showLogin,
+        1200
+    );
 }
 
 </script>
